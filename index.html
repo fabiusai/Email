@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poste Italiane - Email post social</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="title-box">
+            <h1><strong>Poste Italiane</strong></h1>
+            <h2>Email post social</h2>
+        </div>
+<link rel="icon" href="icons8-email-16.png" type="image/png">
+        <div class="form-section">
+            <label for="nomeDestinatario"><strong>Nome destinatario email:</strong></label>
+            <input type="text" id="nomeDestinatario" placeholder="Inserisci il nome del destinatario">
+
+            <label><strong>Saluto:</strong></label>
+            <div class="saluto-options">
+                <label><input type="checkbox" name="saluto" value="Ciao"> Ciao</label>
+                <label><input type="checkbox" name="saluto" value="Buongiorno"> Buongiorno</label>
+                <label><input type="checkbox" name="saluto" value="Buonasera"> Buonasera</label>
+            </div>
+
+            <label for="argomentoPost"><strong>Argomento dei post:</strong></label>
+            <input type="text" id="argomentoPost" placeholder="Inserisci l'argomento dei post">
+
+            <label><strong>Link:</strong></label>
+            <div class="link-inputs">
+                <!-- Genera 10 campi per i link -->
+                <script>
+                    for (let i = 1; i <= 10; i++) {
+                        document.write(`<input type="text" id="link${i}" placeholder="Link ${i}">`);
+                    }
+                </script>
+            </div>
+        </div>
+
+        <div class="output-section">
+            <label><strong>Testo generato:</strong></label>
+            <textarea id="outputText" readonly></textarea>
+        </div>
+
+        <div class="buttons">
+            <button id="salvaButton" onclick="salvaDati()">Salva</button>
+            <button id="cancellaButton" onclick="cancellaDati()">Cancella</button>
+            <button id="copiaButton" onclick="copiaTesto()">Copia</button>
+            <button id="inviaEmailButton" onclick="inviaEmail()">Invia email</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

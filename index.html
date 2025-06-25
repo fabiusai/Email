@@ -3,54 +3,640 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Poste Italiane - Email post social</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Email Generator - Post Social</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #FFEB3B 0%, #FDD835 100%);
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .header h1 {
+            color: #1e3a8a;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h2 {
+            color: #1e40af;
+            font-size: 1.1rem;
+            font-weight: 400;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 35px;
+            padding: 25px;
+            border: 2px solid #f1f5f9;
+            border-radius: 12px;
+            background: #fbfcfd;
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            border-color: #FFEB3B;
+            box-shadow: 0 2px 12px rgba(255, 235, 59, 0.15);
+        }
+
+        .section-title {
+            color: #1e3a8a;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(135deg, #FFEB3B, #FDD835);
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            color: #1e40af;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #ffffff;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #FFEB3B;
+            box-shadow: 0 0 0 3px rgba(255, 235, 59, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background: #ffffff;
+        }
+
+        .checkbox-item:hover {
+            border-color: #FFEB3B;
+            background: #fffde7;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #cbd5e1;
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-item input[type="checkbox"]:checked {
+            background: #1e3a8a;
+            border-color: #1e3a8a;
+        }
+
+        .checkbox-item input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            top: -2px;
+            left: 2px;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .checkbox-item.checked {
+            border-color: #1e3a8a;
+            background: #eff6ff;
+        }
+
+        .link-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .output-section {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .output-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: 'Inter', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            resize: vertical;
+            background: #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        .output-textarea:focus {
+            outline: none;
+            border-color: #FFEB3B;
+            box-shadow: 0 0 0 3px rgba(255, 235, 59, 0.1);
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            min-height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #FFEB3B 0%, #FDD835 100%);
+            color: #1e3a8a;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #FDD835 0%, #F9A825 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 235, 59, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 12px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .checkbox-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .link-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .bounce {
+            animation: bounce 0.6s ease-out;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <div class="title-box">
-            <h1><strong>Poste Italiane</strong></h1>
-            <h2>Email post social</h2>
+        <div class="header">
+            <h1>Email Generator</h1>
+            <h2>Gestione comunicazioni post social</h2>
         </div>
-<link rel="icon" href="icons8-email-16.png" type="image/png">
-        <div class="form-section">
-            <label for="nomeDestinatario"><strong>Nome destinatario email:</strong></label>
-            <input type="text" id="nomeDestinatario" placeholder="Inserisci il nome del destinatario">
 
-            <label><strong>Saluto:</strong></label>
-            <div class="saluto-options">
-                <label><input type="checkbox" name="saluto" value="Ciao"> Ciao</label>
-                <label><input type="checkbox" name="saluto" value="Buongiorno"> Buongiorno</label>
-                <label><input type="checkbox" name="saluto" value="Buonasera"> Buonasera</label>
+        <div class="main-content">
+            <div class="section">
+                <h3 class="section-title">Informazioni Destinatario</h3>
+                <div class="form-group">
+                    <label class="form-label" for="nomeDestinatario">Nome destinatario email</label>
+                    <input type="text" id="nomeDestinatario" class="form-input" placeholder="Inserisci il nome del destinatario">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tipo di saluto</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="saluto" value="Ciao">
+                            <span>Ciao</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="saluto" value="Buongiorno">
+                            <span>Buongiorno</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="saluto" value="Buonasera">
+                            <span>Buonasera</span>
+                        </label>
+                    </div>
+                </div>
             </div>
 
-            <label for="argomentoPost"><strong>Argomento dei post:</strong></label>
-            <input type="text" id="argomentoPost" placeholder="Inserisci l'argomento dei post">
+            <div class="section">
+                <h3 class="section-title">Contenuto Post</h3>
+                <div class="form-group">
+                    <label class="form-label" for="argomentoPost">Argomento dei post</label>
+                    <input type="text" id="argomentoPost" class="form-input" placeholder="Inserisci l'argomento dei post">
+                </div>
 
-            <label><strong>Link:</strong></label>
-            <div class="link-inputs">
-                <!-- Genera 10 campi per i link -->
-                <script>
-                    for (let i = 1; i <= 10; i++) {
-                        document.write(`<input type="text" id="link${i}" placeholder="Link ${i}">`);
-                    }
-                </script>
+                <div class="form-group">
+                    <label class="form-label">Link ai post social</label>
+                    <div class="link-grid" id="linkGrid">
+                        <!-- Links will be generated by JavaScript -->
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div class="output-section">
-            <label><strong>Testo generato:</strong></label>
-            <textarea id="outputText" readonly></textarea>
-        </div>
+            <div class="section">
+                <h3 class="section-title">Anteprima Email</h3>
+                <div class="output-section">
+                    <textarea id="outputText" class="output-textarea" readonly placeholder="Il testo dell'email apparirà qui automaticamente..."></textarea>
+                </div>
+            </div>
 
-        <div class="buttons">
-            <button id="salvaButton" onclick="salvaDati()">Salva</button>
-            <button id="cancellaButton" onclick="cancellaDati()">Cancella</button>
-            <button id="copiaButton" onclick="copiaTesto()">Copia</button>
-            <button id="inviaEmailButton" onclick="inviaEmail()">Invia email</button>
+            <div class="button-grid">
+                <button id="salvaButton" class="btn btn-primary" onclick="salvaDati()">
+                    <span>💾 Salva Dati</span>
+                </button>
+                <button id="cancellaButton" class="btn btn-danger" onclick="cancellaDati()">
+                    <span>🗑️ Cancella Tutto</span>
+                </button>
+                <button id="copiaButton" class="btn btn-secondary" onclick="copiaTesto()">
+                    <span>📋 Copia Testo</span>
+                </button>
+                <button id="inviaEmailButton" class="btn btn-success" onclick="inviaEmail()">
+                    <span>📧 Invia Email</span>
+                </button>
+            </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // Generate link inputs
+        function generateLinkInputs() {
+            const linkGrid = document.getElementById('linkGrid');
+            for (let i = 1; i <= 10; i++) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.id = `link${i}`;
+                input.className = 'form-input';
+                input.placeholder = `Link ${i}`;
+                linkGrid.appendChild(input);
+            }
+        }
+
+        // Initialize the form
+        generateLinkInputs();
+
+        function aggiornaTesto() {
+            const nomeDestinatario = document.getElementById('nomeDestinatario').value;
+            const saluto = document.querySelector('input[name="saluto"]:checked')?.value || '';
+            const argomentoPost = document.getElementById('argomentoPost').value;
+            const links = [];
+
+            for (let i = 1; i <= 10; i++) {
+                const link = document.getElementById(`link${i}`).value;
+                if (link) links.push(link);
+            }
+
+            let outputText = `${saluto} ${nomeDestinatario},\n`;
+            outputText += `ti confermo che siamo online sui nostri canali social con i post dedicati all'argomento «${argomentoPost}».\n\n`;
+            outputText += `I link dei post sono i seguenti:\n`;
+
+            links.forEach(link => {
+                let canaleSocial = '';
+                if (link.startsWith('https://linkedin.com/') || link.startsWith('https://www.linkedin.com/')) {
+                    canaleSocial = 'Linkedin';
+                } else if (link.startsWith('https://x.com/') || link.startsWith('https://twitter.com/')) {
+                    canaleSocial = 'X (Twitter)';
+                } else if (link.startsWith('https://www.facebook.com/')) {
+                    canaleSocial = 'Facebook';
+                } else if (link.startsWith('https://youtu.be/')) {
+                    canaleSocial = 'Youtube';
+                } else if (link.startsWith('https://www.instagram.com/') || link.startsWith('https://instagram.com/')) {
+                    canaleSocial = 'Instagram';
+                }
+                outputText += `${canaleSocial}: ${link}\n`;
+            });
+
+            outputText += `\nUn saluto,\nFabio.`;
+
+            document.getElementById('outputText').value = outputText;
+        }
+
+        function updateButtonText(buttonId, newText, duration = 2000) {
+            const button = document.getElementById(buttonId);
+            const originalText = button.innerHTML;
+            button.innerHTML = newText;
+            button.disabled = true;
+            button.classList.add('bounce');
+            
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+                button.classList.remove('bounce');
+            }, duration);
+        }
+
+        function salvaDati() {
+            const nomeDestinatario = document.getElementById('nomeDestinatario').value;
+            const saluto = document.querySelector('input[name="saluto"]:checked')?.value || '';
+            const argomentoPost = document.getElementById('argomentoPost').value;
+            const links = [];
+
+            for (let i = 1; i <= 10; i++) {
+                const link = document.getElementById(`link${i}`).value;
+                if (link) links.push(link);
+            }
+
+            const data = {
+                nomeDestinatario,
+                saluto,
+                argomentoPost,
+                links
+            };
+
+            // Using in-memory storage instead of localStorage
+            window.emailData = data;
+            updateButtonText('salvaButton', '<span>✅ Dati Salvati!</span>');
+        }
+
+        function cancellaDati() {
+            document.getElementById('nomeDestinatario').value = '';
+            document.querySelectorAll('input[name="saluto"]').forEach(checkbox => {
+                checkbox.checked = false;
+                checkbox.parentElement.classList.remove('checked');
+            });
+            document.getElementById('argomentoPost').value = '';
+            for (let i = 1; i <= 10; i++) {
+                document.getElementById(`link${i}`).value = '';
+            }
+            document.getElementById('outputText').value = '';
+            
+            // Clear stored data
+            window.emailData = null;
+            
+            updateButtonText('cancellaButton', '<span>🗑️ Dati Cancellati!</span>');
+        }
+
+        function copiaTesto() {
+            const outputText = document.getElementById('outputText').value;
+            navigator.clipboard.writeText(outputText).then(() => {
+                updateButtonText('copiaButton', '<span>✅ Testo Copiato!</span>');
+            }).catch(() => {
+                updateButtonText('copiaButton', '<span>❌ Errore Copia</span>');
+            });
+        }
+
+        function inviaEmail() {
+            const outputText = document.getElementById('outputText').value;
+            if (!outputText.trim()) {
+                updateButtonText('inviaEmailButton', '<span>⚠️ Nessun Testo</span>');
+                return;
+            }
+            
+            updateButtonText('inviaEmailButton', '<span>📧 Apertura Email...</span>', 1500);
+            
+            setTimeout(() => {
+                const mailtoLink = `mailto:?subject=Post Social&body=${encodeURIComponent(outputText)}`;
+                window.location.href = mailtoLink;
+            }, 500);
+        }
+
+        // Handle checkbox selection (only one at a time)
+        document.querySelectorAll('input[name="saluto"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                document.querySelectorAll('input[name="saluto"]').forEach(cb => {
+                    cb.parentElement.classList.remove('checked');
+                    if (cb !== this) {
+                        cb.checked = false;
+                    }
+                });
+                
+                if (this.checked) {
+                    this.parentElement.classList.add('checked');
+                }
+                
+                aggiornaTesto();
+            });
+        });
+
+        // Update text in real time
+        document.querySelectorAll('input[type="text"]').forEach(input => {
+            input.addEventListener('input', aggiornaTesto);
+        });
+
+        // Load saved data on page load
+        window.onload = function() {
+            const savedData = window.emailData;
+            if (savedData) {
+                document.getElementById('nomeDestinatario').value = savedData.nomeDestinatario;
+                const salutoCheckbox = document.querySelector(`input[name="saluto"][value="${savedData.saluto}"]`);
+                if (salutoCheckbox) {
+                    salutoCheckbox.checked = true;
+                    salutoCheckbox.parentElement.classList.add('checked');
+                }
+                document.getElementById('argomentoPost').value = savedData.argomentoPost;
+                savedData.links.forEach((link, index) => {
+                    const linkInput = document.getElementById(`link${index + 1}`);
+                    if (linkInput) {
+                        linkInput.value = link;
+                    }
+                });
+                aggiornaTesto();
+            }
+        };
+
+        // Add fade-in animation to sections
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach((section, index) => {
+                setTimeout(() => {
+                    section.classList.add('fade-in');
+                }, index * 100);
+            });
+        });
+    </script>
 </body>
 </html>

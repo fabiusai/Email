@@ -1,643 +1,519 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Generator - Post Social</title>
-      <link rel="icon" href="icons8-email-16.png" type="image/png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Email Generator · Post Social</title>
+<link rel="icon" href="icons8-email-16.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#0047BB; --blue-dark:#00307F; --blue-soft:#EEF3FC;
+  --yellow:#FFD400; --yellow-soft:#FFF8D6;
+  --ink:#0F172A; --muted:#64748B; --line:#E2E8F0; --bg:#F4F6FA; --card:#FFFFFF;
+  --ok:#0E9F6E; --err:#D92D20; --err-soft:#FEF3F2;
+  --radius:14px; --shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px rgba(15,23,42,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;min-height:100vh;-webkit-font-smoothing:antialiased}
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            color: #333;
-            line-height: 1.6;
-            min-height: 100vh;
-            padding: 20px;
-        }
+/* Top bar */
+.topbar{background:var(--blue);color:#fff;position:relative}
+.topbar::after{content:'';position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--yellow)}
+.topbar-inner{max-width:1240px;margin:0 auto;padding:22px 28px 26px;display:flex;align-items:center;gap:14px}
+.logo{width:40px;height:40px;border-radius:10px;background:var(--yellow);display:grid;place-items:center;flex-shrink:0}
+.logo svg{width:22px;height:22px;stroke:var(--blue);fill:none;stroke-width:2}
+.topbar h1{font-size:1.25rem;font-weight:700;letter-spacing:-.01em}
+.topbar p{font-size:.85rem;opacity:.8}
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-            animation: slideIn 0.5s ease-out;
-        }
+/* Layout */
+.layout{max-width:1240px;margin:28px auto;padding:0 28px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
+.col{display:flex;flex-direction:column;gap:20px}
+.preview-col{position:sticky;top:20px}
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px 24px}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px}
+.card-title{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);display:flex;align-items:center;gap:8px}
+.card-title .dot{width:8px;height:8px;border-radius:50%;background:var(--yellow);box-shadow:0 0 0 3px var(--yellow-soft)}
 
-        .header {
-            background: linear-gradient(135deg, #FFEB3B 0%, #FDD835 100%);
-            padding: 30px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
+.field{margin-bottom:16px}
+.field:last-child{margin-bottom:0}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+label.lbl{display:block;font-size:.85rem;font-weight:600;margin-bottom:6px}
+.hint{font-size:.78rem;color:var(--muted);margin-top:6px}
+.input,.textarea{width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:.95rem;background:#fff;color:var(--ink);transition:border-color .15s,box-shadow .15s}
+.input:focus,.textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-soft)}
+.input::placeholder,.textarea::placeholder{color:#A0AEC0}
+.textarea{min-height:170px;resize:vertical;font-family:ui-monospace,'Cascadia Code',Consolas,monospace;font-size:.84rem;line-height:1.7}
 
-        .header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: pulse 4s ease-in-out infinite;
-        }
+/* Segmented control */
+.segmented{display:inline-flex;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px;width:100%}
+.segmented button{flex:1;border:0;background:transparent;font:inherit;font-size:.88rem;font-weight:500;color:var(--muted);padding:8px 10px;border-radius:7px;cursor:pointer;transition:all .15s}
+.segmented button:hover{color:var(--ink)}
+.segmented button.active{background:#fff;color:var(--blue);font-weight:600;box-shadow:0 1px 3px rgba(15,23,42,.12)}
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-        }
+/* Link chips */
+.stats{display:flex;gap:8px;flex-wrap:wrap}
+.stat{font-size:.75rem;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--blue-soft);color:var(--blue)}
+.stat.err{background:var(--err-soft);color:var(--err)}
+.chips{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.chip{display:flex;align-items:center;gap:10px;padding:7px 10px;border:1px solid var(--line);border-radius:10px;font-size:.82rem;background:#fff;animation:fade .2s ease}
+.chip .url{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+.chip .name{font-weight:600;min-width:72px}
+.chip.err{border-color:#FECDCA;background:var(--err-soft)}
+.chip.err .name{color:var(--err)}
+.chip .tag{font-size:.7rem;font-weight:600;padding:2px 7px;border-radius:999px;background:var(--yellow-soft);color:#8A6A00;white-space:nowrap}
+.badge{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:20px;padding:0 5px;border-radius:5px;color:#fff;font:700 11px/1 Arial,Helvetica,sans-serif;flex-shrink:0}
+.cdot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 
-        .header h1 {
-            color: #1e3a8a;
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-            position: relative;
-            z-index: 1;
-        }
+.alert{display:none;margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--err-soft);color:var(--err);font-size:.82rem;border:1px solid #FECDCA}
+.alert.show{display:block}
 
-        .header h2 {
-            color: #1e40af;
-            font-size: 1.1rem;
-            font-weight: 400;
-            position: relative;
-            z-index: 1;
-        }
+/* Options */
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 0;border-top:1px solid var(--line)}
+.toggle:first-of-type{border-top:0;padding-top:0}
+.toggle-text strong{display:block;font-size:.88rem;font-weight:600}
+.toggle-text span{font-size:.78rem;color:var(--muted)}
+.switch{position:relative;width:40px;height:22px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:#CBD5E1;border-radius:999px;cursor:pointer;transition:.2s}
+.slider::before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.switch input:checked + .slider{background:var(--blue)}
+.switch input:checked + .slider::before{transform:translateX(18px)}
 
-        .main-content {
-            padding: 40px;
-        }
+/* Preview */
+.preview-meta{font-size:.82rem;color:var(--muted);padding:10px 14px;border:1px solid var(--line);border-bottom:0;border-radius:10px 10px 0 0;background:#FAFBFD}
+.preview-meta b{color:var(--ink);font-weight:600}
+.preview{border:1px solid var(--line);border-radius:0 0 10px 10px;padding:18px;min-height:280px;max-height:56vh;overflow:auto;background:#fff;font-family:Calibri,'Segoe UI',Arial,sans-serif;font-size:14.5px;line-height:1.55;word-break:break-word}
+.preview.plain{font-family:ui-monospace,Consolas,monospace;font-size:13px;white-space:pre-wrap}
+.preview a{color:var(--blue)}
+.preview .empty{color:#A0AEC0;font-style:italic}
 
-        .section {
-            margin-bottom: 35px;
-            padding: 25px;
-            border: 2px solid #f1f5f9;
-            border-radius: 12px;
-            background: #fbfcfd;
-            transition: all 0.3s ease;
-        }
+/* Buttons */
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 16px;border-radius:10px;font:inherit;font-size:.9rem;font-weight:600;cursor:pointer;border:1px solid transparent;transition:transform .1s,background .15s,box-shadow .15s}
+.btn svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-primary:hover{background:var(--blue-dark);box-shadow:0 6px 16px rgba(0,71,187,.25)}
+.btn-accent{background:var(--yellow);color:var(--blue-dark)}
+.btn-accent:hover{background:#F5C800;box-shadow:0 6px 16px rgba(255,212,0,.35)}
+.btn-ghost{background:#fff;color:var(--ink);border-color:var(--line)}
+.btn-ghost:hover{background:var(--bg)}
+.btn-ghost.danger:hover{color:var(--err);border-color:#FECDCA;background:var(--err-soft)}
+.btn-block{grid-column:1/-1}
 
-        .section:hover {
-            border-color: #FFEB3B;
-            box-shadow: 0 2px 12px rgba(255, 235, 59, 0.15);
-        }
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:10px;font-size:.88rem;font-weight:500;opacity:0;pointer-events:none;transition:all .25s;box-shadow:0 10px 30px rgba(0,0,0,.2);z-index:10}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.err{background:var(--err)}
 
-        .section-title {
-            color: #1e3a8a;
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .section-title::before {
-            content: '';
-            display: inline-block;
-            width: 4px;
-            height: 24px;
-            background: linear-gradient(135deg, #FFEB3B, #FDD835);
-            border-radius: 2px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            color: #1e40af;
-            font-weight: 500;
-            margin-bottom: 8px;
-            font-size: 0.95rem;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background: #ffffff;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: #FFEB3B;
-            box-shadow: 0 0 0 3px rgba(255, 235, 59, 0.1);
-        }
-
-        .form-input::placeholder {
-            color: #94a3b8;
-        }
-
-        .checkbox-group {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin-top: 10px;
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            padding: 8px 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            background: #ffffff;
-        }
-
-        .checkbox-item:hover {
-            border-color: #FFEB3B;
-            background: #fffde7;
-        }
-
-        .checkbox-item input[type="checkbox"] {
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            border: 2px solid #cbd5e1;
-            border-radius: 4px;
-            position: relative;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .checkbox-item input[type="checkbox"]:checked {
-            background: #1e3a8a;
-            border-color: #1e3a8a;
-        }
-
-        .checkbox-item input[type="checkbox"]:checked::after {
-            content: '✓';
-            position: absolute;
-            top: -2px;
-            left: 2px;
-            color: white;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .checkbox-item.checked {
-            border-color: #1e3a8a;
-            background: #eff6ff;
-        }
-
-        .link-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .output-section {
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 20px;
-        }
-
-        .output-textarea {
-            width: 100%;
-            min-height: 200px;
-            padding: 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-family: 'Inter', monospace;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            resize: vertical;
-            background: #ffffff;
-            transition: all 0.3s ease;
-        }
-
-        .output-textarea:focus {
-            outline: none;
-            border-color: #FFEB3B;
-            box-shadow: 0 0 0 3px rgba(255, 235, 59, 0.1);
-        }
-
-        .button-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        .btn {
-            padding: 14px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            text-align: center;
-            min-height: 52px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.3);
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #FFEB3B 0%, #FDD835 100%);
-            color: #1e3a8a;
-        }
-
-        .btn-secondary:hover {
-            background: linear-gradient(135deg, #FDD835 0%, #F9A825 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 235, 59, 0.3);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.3);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.3);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                margin: 10px;
-                border-radius: 12px;
-            }
-
-            .header {
-                padding: 20px;
-            }
-
-            .header h1 {
-                font-size: 1.8rem;
-            }
-
-            .main-content {
-                padding: 20px;
-            }
-
-            .section {
-                padding: 20px;
-            }
-
-            .checkbox-group {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .link-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .button-grid {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .bounce {
-            animation: bounce 0.6s ease-out;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
-        }
-    </style>
+@keyframes fade{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+@media (max-width:960px){
+  .layout{grid-template-columns:1fr}
+  .preview-col{position:static}
+}
+@media (max-width:520px){
+  .layout{padding:0 14px;margin:18px auto}
+  .row{grid-template-columns:1fr}
+  .topbar-inner{padding:18px 16px 22px}
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Email Generator</h1>
-            <h2>Gestione comunicazioni post social</h2>
-        </div>
 
-        <div class="main-content">
-            <div class="section">
-                <h3 class="section-title">Informazioni Destinatario</h3>
-                <div class="form-group">
-                    <label class="form-label" for="nomeDestinatario">Nome destinatario email</label>
-                    <input type="text" id="nomeDestinatario" class="form-input" placeholder="Inserisci il nome del destinatario">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Tipo di saluto</label>
-                    <div class="checkbox-group">
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="saluto" value="Ciao">
-                            <span>Ciao</span>
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="saluto" value="Buongiorno">
-                            <span>Buongiorno</span>
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="saluto" value="Buonasera">
-                            <span>Buonasera</span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="section">
-                <h3 class="section-title">Contenuto Post</h3>
-                <div class="form-group">
-                    <label class="form-label" for="argomentoPost">Argomento dei post</label>
-                    <input type="text" id="argomentoPost" class="form-input" placeholder="Inserisci l'argomento dei post">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Link ai post social</label>
-                    <div class="link-grid" id="linkGrid">
-                        <!-- Links will be generated by JavaScript -->
-                    </div>
-                </div>
-            </div>
-
-            <div class="section">
-                <h3 class="section-title">Anteprima Email</h3>
-                <div class="output-section">
-                    <textarea id="outputText" class="output-textarea" readonly placeholder="Il testo dell'email apparirà qui automaticamente..."></textarea>
-                </div>
-            </div>
-
-            <div class="button-grid">
-                <button id="salvaButton" class="btn btn-primary" onclick="salvaDati()">
-                    <span>💾 Salva Dati</span>
-                </button>
-                <button id="cancellaButton" class="btn btn-danger" onclick="cancellaDati()">
-                    <span>🗑️ Cancella Tutto</span>
-                </button>
-                <button id="copiaButton" class="btn btn-secondary" onclick="copiaTesto()">
-                    <span>📋 Copia Testo</span>
-                </button>
-                <button id="inviaEmailButton" class="btn btn-success" onclick="inviaEmail()">
-                    <span>📧 Invia Email</span>
-                </button>
-            </div>
-        </div>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="logo"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></div>
+    <div>
+      <h1>Email Generator</h1>
+      <p>Comunicazione link post social</p>
     </div>
+  </div>
+</header>
 
-    <script>
-        // Generate link inputs
-        function generateLinkInputs() {
-            const linkGrid = document.getElementById('linkGrid');
-            for (let i = 1; i <= 10; i++) {
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.id = `link${i}`;
-                input.className = 'form-input';
-                input.placeholder = `Link ${i}`;
-                linkGrid.appendChild(input);
-            }
-        }
+<main class="layout">
+  <!-- COLONNA SINISTRA -->
+  <div class="col">
 
-        // Initialize the form
-        generateLinkInputs();
+    <section class="card">
+      <div class="card-head"><div class="card-title"><span class="dot"></span>Destinatario</div></div>
+      <div class="field">
+        <label class="lbl" for="nome">Nome destinatario</label>
+        <input id="nome" class="input" type="text" placeholder="Es. Marco" autocomplete="off">
+      </div>
+      <div class="field">
+        <label class="lbl">Saluto</label>
+        <div class="segmented" id="saluto">
+          <button type="button" data-v="Ciao">Ciao</button>
+          <button type="button" data-v="Buongiorno">Buongiorno</button>
+          <button type="button" data-v="Buonasera">Buonasera</button>
+        </div>
+      </div>
+      <div class="field">
+        <label class="lbl" for="firma">Firma</label>
+        <input id="firma" class="input" type="text" placeholder="Es. Fabio" autocomplete="off">
+      </div>
+    </section>
 
-        function aggiornaTesto() {
-            const nomeDestinatario = document.getElementById('nomeDestinatario').value;
-            const saluto = document.querySelector('input[name="saluto"]:checked')?.value || '';
-            const argomentoPost = document.getElementById('argomentoPost').value;
-            const links = [];
+    <section class="card">
+      <div class="card-head">
+        <div class="card-title"><span class="dot"></span>Contenuto</div>
+        <div class="stats" id="stats"></div>
+      </div>
+      <div class="field">
+        <label class="lbl" for="argomento">Argomento dei post</label>
+        <input id="argomento" class="input" type="text" placeholder="Es. Festa del Cinema di Roma" autocomplete="off">
+      </div>
+      <div class="field">
+        <label class="lbl" for="links">Link ai post</label>
+        <textarea id="links" class="textarea" spellcheck="false" placeholder="Incolla i link, uno per riga&#10;https://www.facebook.com/...&#10;https://www.linkedin.com/feed/update/...&#10;https://www.instagram.com/p/...&#10;https://x.com/PosteItaliane/status/..."></textarea>
+        <div class="hint">Il canale viene riconosciuto in automatico. Supportati anche i Safe Links di Outlook.</div>
+        <div class="alert" id="alert"></div>
+        <div class="chips" id="chips"></div>
+      </div>
+    </section>
 
-            for (let i = 1; i <= 10; i++) {
-                const link = document.getElementById(`link${i}`).value;
-                if (link) links.push(link);
-            }
+    <section class="card">
+      <div class="card-head"><div class="card-title"><span class="dot"></span>Opzioni</div></div>
+      <div class="toggle">
+        <div class="toggle-text"><strong>Pulisci i link</strong><span>Rimuove i parametri di tracciamento (utm, si, igsh, fbclid…)</span></div>
+        <label class="switch"><input type="checkbox" id="optClean" checked><span class="slider"></span></label>
+      </div>
+    </section>
+  </div>
 
-            let outputText = `${saluto} ${nomeDestinatario},\n`;
-            outputText += `ti confermo che siamo online sui nostri canali social con i post dedicati all'argomento «${argomentoPost}».\n\n`;
-            outputText += `I link dei post sono i seguenti:\n`;
+  <!-- COLONNA DESTRA -->
+  <div class="col preview-col">
+    <section class="card">
+      <div class="card-head">
+        <div class="card-title"><span class="dot"></span>Anteprima email</div>
+        <div class="segmented" id="viewMode" style="width:auto">
+          <button type="button" data-v="html" class="active">Formattata</button>
+          <button type="button" data-v="plain">Testo</button>
+        </div>
+      </div>
+      <div class="preview-meta">Oggetto: <b id="subject">Post social</b></div>
+      <div class="preview" id="preview"><span class="empty">Il testo dell'email apparirà qui…</span></div>
 
-            links.forEach(link => {
-                let canaleSocial = '';
-                if (link.startsWith('https://linkedin.com/') || link.startsWith('https://www.linkedin.com/')) {
-                    canaleSocial = 'Linkedin';
-                } else if (link.startsWith('https://x.com/') || link.startsWith('https://twitter.com/')) {
-                    canaleSocial = 'X (Twitter)';
-                } else if (link.startsWith('https://www.facebook.com/')) {
-                    canaleSocial = 'Facebook';
-                } else if (link.startsWith('https://youtu.be/')) {
-                    canaleSocial = 'Youtube';
-                } else if (link.startsWith('https://www.instagram.com/') || link.startsWith('https://instagram.com/')) {
-                    canaleSocial = 'Instagram';
-                }
-                outputText += `${canaleSocial}: ${link}\n`;
-            });
+      <div class="actions">
+        <button class="btn btn-primary btn-block" id="btnCopy" type="button">
+          <svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Copia email formattata
+        </button>
+        <button class="btn btn-accent" id="btnMail" type="button">
+          <svg viewBox="0 0 24 24"><path d="m22 2-11 11"/><path d="M22 2 15 22l-4-9-9-4z"/></svg>Apri in Outlook
+        </button>
+        <button class="btn btn-ghost" id="btnSave" type="button">
+          <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>Salva bozza
+        </button>
+        <button class="btn btn-ghost danger btn-block" id="btnClear" type="button">
+          <svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>Cancella tutto
+        </button>
+      </div>
+      <div class="hint" style="text-align:center;margin-top:10px">“Apri in Outlook” inserisce solo testo semplice: per il grassetto usa “Copia” e incolla nel messaggio.</div>
+    </section>
+  </div>
+</main>
 
-            outputText += `\nUn saluto,\nFabio.`;
+<div class="toast" id="toast"></div>
 
-            document.getElementById('outputText').value = outputText;
-        }
+<script>
+(() => {
+  'use strict';
 
-        function updateButtonText(buttonId, newText, duration = 2000) {
-            const button = document.getElementById(buttonId);
-            const originalText = button.innerHTML;
-            button.innerHTML = newText;
-            button.disabled = true;
-            button.classList.add('bounce');
-            
-            setTimeout(() => {
-                button.innerHTML = originalText;
-                button.disabled = false;
-                button.classList.remove('bounce');
-            }, duration);
-        }
+  /* ---------- Canali (ordine = ordine in email) ---------- */
+  const CHANNELS = [
+    { name:'Facebook',  color:'#1877F2', mark:'f',  hosts:['facebook.com','fb.com','fb.watch','fb.me'] },
+    { name:'Linkedin',  color:'#0A66C2', mark:'in', hosts:['linkedin.com','lnkd.in'] },
+    { name:'Instagram', color:'#E1306C', mark:'ig', hosts:['instagram.com','instagr.am'] },
+    { name:'X',         color:'#000000', mark:'X',  hosts:['x.com','twitter.com','t.co'] },
+    { name:'Youtube',   color:'#FF0000', mark:'▶',  hosts:['youtube.com','youtu.be'] },
+    { name:'Threads',   color:'#000000', mark:'@',  hosts:['threads.net','threads.com'] },
+    { name:'Tiktok',    color:'#000000', mark:'♪',  hosts:['tiktok.com'] },
+    { name:'Whatsapp',  color:'#25D366', mark:'wa', hosts:['whatsapp.com','wa.me'] },
+    { name:'Telegram',  color:'#229ED9', mark:'➤',  hosts:['t.me','telegram.me','telegram.org'] }
+  ];
 
-        function salvaDati() {
-            const nomeDestinatario = document.getElementById('nomeDestinatario').value;
-            const saluto = document.querySelector('input[name="saluto"]:checked')?.value || '';
-            const argomentoPost = document.getElementById('argomentoPost').value;
-            const links = [];
+  const TRACKING = /^(utm_|fbclid$|gclid$|igsh$|igshid$|si$|feature$|mibextid$|rcm$|ref$|ref_src$|s$|t$|trk$|lipi$|_rdr$|share_id$)/i;
+  const STORE_KEY = 'emailGenPostSocial.v2';
 
-            for (let i = 1; i <= 10; i++) {
-                const link = document.getElementById(`link${i}`).value;
-                if (link) links.push(link);
-            }
+  const $ = id => document.getElementById(id);
+  const el = {
+    nome:$('nome'), firma:$('firma'), argomento:$('argomento'), links:$('links'),
+    saluto:$('saluto'), viewMode:$('viewMode'), optClean:$('optClean'),
+    chips:$('chips'), stats:$('stats'), alert:$('alert'), preview:$('preview'), subject:$('subject'), toast:$('toast')
+  };
 
-            const data = {
-                nomeDestinatario,
-                saluto,
-                argomentoPost,
-                links
-            };
+  let state = { saluto:'', view:'html', last:{ plain:'', html:'', errors:0, valid:0 } };
 
-            // Using in-memory storage instead of localStorage
-            window.emailData = data;
-            updateButtonText('salvaButton', '<span>✅ Dati Salvati!</span>');
-        }
+  /* ---------- Utility ---------- */
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-        function cancellaDati() {
-            document.getElementById('nomeDestinatario').value = '';
-            document.querySelectorAll('input[name="saluto"]').forEach(checkbox => {
-                checkbox.checked = false;
-                checkbox.parentElement.classList.remove('checked');
-            });
-            document.getElementById('argomentoPost').value = '';
-            for (let i = 1; i <= 10; i++) {
-                document.getElementById(`link${i}`).value = '';
-            }
-            document.getElementById('outputText').value = '';
-            
-            // Clear stored data
-            window.emailData = null;
-            
-            updateButtonText('cancellaButton', '<span>🗑️ Dati Cancellati!</span>');
-        }
+  function toast(msg, isErr=false){
+    el.toast.textContent = msg;
+    el.toast.className = 'toast show' + (isErr ? ' err' : '');
+    clearTimeout(toast.t);
+    toast.t = setTimeout(() => el.toast.className = 'toast', 2200);
+  }
 
-        function copiaTesto() {
-            const outputText = document.getElementById('outputText').value;
-            navigator.clipboard.writeText(outputText).then(() => {
-                updateButtonText('copiaButton', '<span>✅ Testo Copiato!</span>');
-            }).catch(() => {
-                updateButtonText('copiaButton', '<span>❌ Errore Copia</span>');
-            });
-        }
+  function hostMatches(host, domain){
+    return host === domain || host.endsWith('.' + domain);
+  }
 
-        function inviaEmail() {
-            const outputText = document.getElementById('outputText').value;
-            if (!outputText.trim()) {
-                updateButtonText('inviaEmailButton', '<span>⚠️ Nessun Testo</span>');
-                return;
-            }
-            
-            updateButtonText('inviaEmailButton', '<span>📧 Apertura Email...</span>', 1500);
-            
-            setTimeout(() => {
-                const mailtoLink = `mailto:?subject=Post Social&body=${encodeURIComponent(outputText)}`;
-                window.location.href = mailtoLink;
-            }, 500);
-        }
+  /* ---------- Parsing link ---------- */
+  function normalize(raw){
+    let s = raw.trim().replace(/^[<("'\s]+|[>)"'\s,;]+$/g, '');
+    if (!s) return null;
+    if (!/^https?:\/\//i.test(s)) s = 'https://' + s;
+    let u;
+    try { u = new URL(s); } catch { return { raw, url:s, channel:null }; }
 
-        // Handle checkbox selection (only one at a time)
-        document.querySelectorAll('input[name="saluto"]').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                document.querySelectorAll('input[name="saluto"]').forEach(cb => {
-                    cb.parentElement.classList.remove('checked');
-                    if (cb !== this) {
-                        cb.checked = false;
-                    }
-                });
-                
-                if (this.checked) {
-                    this.parentElement.classList.add('checked');
-                }
-                
-                aggiornaTesto();
-            });
+    // Safe Links di Outlook
+    if (/safelinks\.protection\.outlook\.com$/i.test(u.hostname) && u.searchParams.get('url')) {
+      try { u = new URL(u.searchParams.get('url')); } catch { return { raw, url:s, channel:null }; }
+    }
+
+    const host = u.hostname.toLowerCase().replace(/^www\./,'');
+    const channel = CHANNELS.find(c => c.hosts.some(h => hostMatches(host, h))) || null;
+
+    if (el.optClean.checked && channel) {
+      if (channel.name === 'Instagram') {
+        u.search = '';
+      } else {
+        [...u.searchParams.keys()].forEach(k => {
+          // su YouTube mantieni v (id video)
+          if (channel.name === 'Youtube' && k === 'v') return;
+          if (TRACKING.test(k)) u.searchParams.delete(k);
         });
+      }
+      u.hash = '';
+    }
+    let url = u.toString();
+    if (!u.search && !u.hash && url.endsWith('/') && u.pathname === '/') url = url.slice(0,-1);
+    return { raw, url, channel };
+  }
 
-        // Update text in real time
-        document.querySelectorAll('input[type="text"]').forEach(input => {
-            input.addEventListener('input', aggiornaTesto);
-        });
+  function parseLinks(){
+    const seen = new Set();
+    const items = [];
+    let dupes = 0;
+    el.links.value.split(/\r?\n/).forEach(line => {
+      if (!line.trim()) return;
+      // più link sulla stessa riga separati da spazi
+      line.trim().split(/\s+/).forEach(tok => {
+        const it = normalize(tok);
+        if (!it) return;
+        const key = it.url.toLowerCase();
+        if (seen.has(key)) { dupes++; return; }
+        seen.add(key);
+        items.push(it);
+      });
+    });
+    return { items, dupes };
+  }
 
-        // Load saved data on page load
-        window.onload = function() {
-            const savedData = window.emailData;
-            if (savedData) {
-                document.getElementById('nomeDestinatario').value = savedData.nomeDestinatario;
-                const salutoCheckbox = document.querySelector(`input[name="saluto"][value="${savedData.saluto}"]`);
-                if (salutoCheckbox) {
-                    salutoCheckbox.checked = true;
-                    salutoCheckbox.parentElement.classList.add('checked');
-                }
-                document.getElementById('argomentoPost').value = savedData.argomentoPost;
-                savedData.links.forEach((link, index) => {
-                    const linkInput = document.getElementById(`link${index + 1}`);
-                    if (linkInput) {
-                        linkInput.value = link;
-                    }
-                });
-                aggiornaTesto();
-            }
-        };
+  /* ---------- Composizione email ---------- */
+  function compose(){
+    const nome = el.nome.value.trim();
+    const firma = el.firma.value.trim();
+    const argomento = el.argomento.value.trim();
+    const { items, dupes } = parseLinks();
 
-        // Add fade-in animation to sections
-        document.addEventListener('DOMContentLoaded', function() {
-            const sections = document.querySelectorAll('.section');
-            sections.forEach((section, index) => {
-                setTimeout(() => {
-                    section.classList.add('fade-in');
-                }, index * 100);
-            });
-        });
-    </script>
+    const valid = items.filter(i => i.channel);
+    const errors = items.filter(i => !i.channel);
+
+    // raggruppa per canale nell'ordine stabilito
+    const groups = CHANNELS
+      .map(c => ({ c, links: valid.filter(i => i.channel === c).map(i => i.url) }))
+      .filter(g => g.links.length);
+    const multi = groups.some(g => g.links.length > 1);
+
+    const apertura = [state.saluto, nome].filter(Boolean).join(' ');
+    const intro = `ti confermo che siamo online sui nostri canali social con i post dedicati all'argomento «${argomento}».`;
+    const leadLinks = valid.length === 1 ? 'Il link del post è il seguente:' : 'I link dei post sono i seguenti:';
+
+    // --- testo semplice
+    let p = '';
+    if (apertura) p += apertura + ',\n';
+    p += intro + '\n\n';
+    if (valid.length) {
+      p += leadLinks + '\n';
+      if (!multi) {
+        groups.forEach(g => p += `${g.c.name}: ${g.links[0]}\n`);
+      } else {
+        p += '\n' + groups.map(g => g.c.name + '\n' + g.links.join('\n')).join('\n\n') + '\n';
+      }
+    }
+    p += '\nUn saluto,\n' + (firma || '') + (firma ? '.' : '');
+
+    // --- HTML (per Outlook)
+    const F = 'font-family:Calibri,Arial,Helvetica,sans-serif;font-size:11pt;color:#000000;';
+    const a = u => `<a href="${esc(u)}" style="color:#0047BB;">${esc(u)}</a>`;
+    const nm = c => `<b>${esc(c.name)}</b>`;
+    let h = `<div style="${F}">`;
+    if (apertura) h += `${esc(apertura)},<br>`;
+    h += `${esc(intro)}<br><br>`;
+    if (valid.length) {
+      h += `${esc(leadLinks)}<br>`;
+      if (!multi) {
+        groups.forEach(g => h += `${nm(g.c)}: ${a(g.links[0])}<br>`);
+      } else {
+        h += '<br>' + groups.map(g => nm(g.c) + '<br>' + g.links.map(a).join('<br>')).join('<br><br>') + '<br>';
+      }
+    }
+    h += `<br>Un saluto,<br>${esc(firma)}${firma ? '.' : ''}</div>`;
+
+    state.last = { plain:p, html:h, errors:errors.length, valid:valid.length };
+
+    renderChips(items, dupes, errors);
+    renderPreview();
+    el.subject.textContent = argomento ? `Post social – ${argomento}` : 'Post social';
+  }
+
+  /* ---------- Render UI ---------- */
+  function renderChips(items, dupes, errors){
+    el.chips.innerHTML = items.map(i => i.channel
+      ? `<div class="chip"><span class="cdot" style="background:${i.channel.color}"></span><span class="name">${i.channel.name}</span><span class="url" title="${esc(i.url)}">${esc(i.url)}</span></div>`
+      : `<div class="chip err"><span class="cdot" style="background:var(--err)"></span><span class="name">Non riconosciuto</span><span class="url" title="${esc(i.raw)}">${esc(i.raw)}</span></div>`
+    ).join('');
+
+    const ok = items.length - errors.length;
+    let s = '';
+    if (ok) s += `<span class="stat">${ok} link</span>`;
+    if (dupes) s += `<span class="stat">${dupes} duplicat${dupes>1?'i':'o'} rimoss${dupes>1?'i':'o'}</span>`;
+    if (errors.length) s += `<span class="stat err">${errors.length} error${errors.length>1?'i':'e'}</span>`;
+    el.stats.innerHTML = s;
+
+    if (errors.length) {
+      el.alert.innerHTML = `<b>${errors.length} link non riconosciut${errors.length>1?'i':'o'}</b>: canale social non identificato o indirizzo non valido. ${errors.length>1?'Sono stati esclusi':'È stato escluso'} dall'email.`;
+      el.alert.classList.add('show');
+    } else {
+      el.alert.classList.remove('show');
+    }
+  }
+
+  function renderPreview(){
+    const hasContent = el.nome.value.trim() || el.argomento.value.trim() || state.last.valid || state.saluto;
+    if (!hasContent) {
+      el.preview.className = 'preview';
+      el.preview.innerHTML = `<span class="empty">Il testo dell'email apparirà qui…</span>`;
+      return;
+    }
+    if (state.view === 'plain') {
+      el.preview.className = 'preview plain';
+      el.preview.textContent = state.last.plain;
+    } else {
+      el.preview.className = 'preview';
+      el.preview.innerHTML = state.last.html;
+    }
+  }
+
+  function setSaluto(v){
+    state.saluto = v;
+    [...el.saluto.querySelectorAll('button')].forEach(b => b.classList.toggle('active', b.dataset.v === v));
+  }
+
+  /* ---------- Azioni ---------- */
+  function warnErrors(){
+    if (state.last.errors) toast(`Attenzione: ${state.last.errors} link non riconosciut${state.last.errors>1?'i':'o'} esclus${state.last.errors>1?'i':'o'}`, true);
+  }
+
+  async function copy(){
+    if (!state.last.valid && !el.argomento.value.trim()) { toast('Nessun contenuto da copiare', true); return; }
+    const { plain, html } = state.last;
+    try {
+      if (window.ClipboardItem && navigator.clipboard?.write) {
+        await navigator.clipboard.write([new ClipboardItem({
+          'text/html': new Blob([html], { type:'text/html' }),
+          'text/plain': new Blob([plain], { type:'text/plain' })
+        })]);
+      } else throw new Error('fallback');
+    } catch {
+      // Fallback: selezione di un nodo HTML nascosto
+      const box = document.createElement('div');
+      box.contentEditable = 'true';
+      box.style.cssText = 'position:fixed;left:-9999px;top:0;';
+      box.innerHTML = html;
+      document.body.appendChild(box);
+      const r = document.createRange(); r.selectNodeContents(box);
+      const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      const ok = document.execCommand('copy');
+      sel.removeAllRanges(); box.remove();
+      if (!ok) { toast('Errore durante la copia', true); return; }
+    }
+    state.last.errors ? warnErrors() : toast('Email copiata: incollala in Outlook');
+  }
+
+  function openMail(){
+    if (!state.last.valid && !el.argomento.value.trim()) { toast('Nessun contenuto da inviare', true); return; }
+    warnErrors();
+    const subject = el.subject.textContent;
+    location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(state.last.plain)}`;
+  }
+
+  function save(silent=false){
+    const data = {
+      nome:el.nome.value, saluto:state.saluto, firma:el.firma.value, argomento:el.argomento.value,
+      links:el.links.value, clean:el.optClean.checked, view:state.view
+    };
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); if (!silent) toast('Bozza salvata'); }
+    catch { if (!silent) toast('Impossibile salvare nel browser', true); }
+  }
+
+  function clearAll(){
+    if (!confirm('Cancellare tutti i dati inseriti? La firma verrà mantenuta.')) return;
+    el.nome.value = ''; el.argomento.value = ''; el.links.value = '';
+    setSaluto(defaultSaluto());
+    compose(); save(true);
+    toast('Dati cancellati');
+  }
+
+  function defaultSaluto(){
+    return new Date().getHours() >= 17 ? 'Buonasera' : 'Buongiorno';
+  }
+
+  function load(){
+    let d = null;
+    try { d = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch {}
+    if (d) {
+      el.nome.value = d.nome || ''; el.firma.value = d.firma ?? 'Fabio';
+      el.argomento.value = d.argomento || ''; el.links.value = d.links || '';
+      el.optClean.checked = d.clean !== false;
+      state.view = d.view === 'plain' ? 'plain' : 'html';
+      setSaluto(d.saluto || defaultSaluto());
+    } else {
+      el.firma.value = 'Fabio';
+      setSaluto(defaultSaluto());
+    }
+    [...el.viewMode.querySelectorAll('button')].forEach(b => b.classList.toggle('active', b.dataset.v === state.view));
+  }
+
+  /* ---------- Eventi ---------- */
+  el.saluto.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    setSaluto(state.saluto === b.dataset.v ? '' : b.dataset.v);
+    compose();
+  });
+  el.viewMode.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    state.view = b.dataset.v;
+    [...el.viewMode.querySelectorAll('button')].forEach(x => x.classList.toggle('active', x === b));
+    renderPreview();
+  });
+  [el.nome, el.firma, el.argomento, el.links].forEach(i => i.addEventListener('input', compose));
+  el.optClean.addEventListener('change', compose);
+  el.firma.addEventListener('change', () => save(true));
+
+  $('btnCopy').addEventListener('click', copy);
+  $('btnMail').addEventListener('click', openMail);
+  $('btnSave').addEventListener('click', () => save());
+  $('btnClear').addEventListener('click', clearAll);
+
+  load();
+  compose();
+})();
+</script>
 </body>
 </html>
